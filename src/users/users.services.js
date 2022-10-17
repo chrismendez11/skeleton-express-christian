@@ -13,8 +13,7 @@ const getAllUsers = (req, res) => {
 
 const getUserById = (req, res) => {
   const id = req.params.id;
-  usersControllers
-    .getUserById(id)
+  usersControllers.getUserById(id)
     .then((data) => {
       res.status(200).json(data);
     })
@@ -107,6 +106,41 @@ const getMyUser = (req , res) => {
     })
 }
 
+const patchMyUser = (req, res) => {
+  const id = req.user.id;
+  const { firstName, lastName, phone, gender, country } = req.body;
+
+  usersControllers.updateUser(id, { firstName, lastName, phone, gender, country })
+    .then((data) => {
+      if (data[0]) {
+        res
+          .status(200)
+          .json({ message: `Your user with ID: ${id}, edited succesfully!` });
+      } else {
+        res.status(404).json({ message: "Invalid ID" });
+      }
+    })
+    .catch((err) => {
+      res.status(400).json({ message: err.message });
+    });
+};
+
+const deleteMyUser = (req, res) => {
+  const id = req.user.id;
+  usersControllers
+    .deleteUser(id)
+    .then((data) => {
+      if (data) {
+        res.status(204).json();
+      } else {
+        res.status(404).json({ message: "Invalid ID" });
+      }
+    })
+    .catch((err) => {
+      res.status(400).json({ message: err.message });
+    });
+};
+
 
 
 module.exports = {
@@ -115,6 +149,8 @@ module.exports = {
     patchUser,
     registerUser,
     deleteUser,
-    getMyUser
+    getMyUser,
+    patchMyUser,
+    deleteMyUser
 }
 
